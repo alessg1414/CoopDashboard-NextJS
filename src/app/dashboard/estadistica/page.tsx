@@ -1,0 +1,44 @@
+"use client";
+import { TabView, TabPanel } from "primereact/tabview";
+import Estadistica2 from "@/app/components/estadisticas/Estadisticas2";
+import EstadisticaAreas from "@/app/components/estadisticas/EstadisticaAreas";
+import { useState } from "react";
+
+export default function EstadisticaPage() {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  return (
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <div className="bg-white shadow-md rounded-lg p-6">       
+
+        <div className="custom-tabs">
+          <TabView
+            className="slanted-tabview"
+            activeIndex={activeIndex}
+            onTabChange={(e) => setActiveIndex(e.index)}
+          >
+
+            <TabPanel header="📈 Fases del macroproceso de convenios de cooperación ">
+              <div className="p-4 fade-in">
+                <Estadistica2 />
+              </div>
+            </TabPanel>
+
+            <TabPanel header="📚 Áreas estratégicas">
+              <div className="p-4 fade-in">
+                <EstadisticaAreas />
+              </div>
+            </TabPanel>
+
+            {/* <TabPanel header="📋 Diagrama Gantt ">
+              <div className="p-4 fade-in">
+                <Estadistica3 />
+              </div>
+            </TabPanel> */}
+
+          </TabView>
+        </div>
+      </div>
+    </div>
+  );
+}
