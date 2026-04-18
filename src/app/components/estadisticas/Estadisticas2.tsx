@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Chart } from "primereact/chart";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { API_BASE, apiFetch } from "@/utils/api";
-import { FASES_CONVENIO } from "@/utils/constants";
 
 // Usar la paleta base de oportunidades para consistencia visual
 const basePalette = ["#CFAC65", "#182951", "#F2DAB1", "#C1C5C8", "#0034A0"];
@@ -36,9 +35,6 @@ function generarColoresDesdeBase(cantidad: number): string[] {
   return colores;
 }
 
-const fasesNombres = FASES_CONVENIO.map(f => f.value);
-const fases = fasesNombres.map((nombre, idx) => ({ nombre, color: generarColoresDesdeBase(fasesNombres.length)[idx] }));
-
 export default function Estadistica2() {
   const [conveniosPorFase, setConveniosPorFase] = useState<Record<string, string[]>>({});
 
@@ -51,14 +47,13 @@ export default function Estadistica2() {
         const data = await response.json();
         const convenios = data.convenios || [];
 
-        // Agrupar convenios por fase
+        // Agrupar convenios por fase dinámicamente
         const agrupado: Record<string, string[]> = {};
-        fases.forEach(f => agrupado[f.nombre] = []);
 
         convenios.forEach((convenio: any) => {
-          if (agrupado[convenio.fase_actual]) {
-            agrupado[convenio.fase_actual].push(convenio.cooperante);
-          }
+          const fase = convenio.fase_actual || "Sin fase definida";
+          if (!agrupado[fase]) agrupado[fase] = [];
+          agrupado[fase].push(convenio.cooperante || convenio.nombre || `Convenio ${convenio.id}`);
         });
 
         setConveniosPorFase(agrupado);
@@ -70,20 +65,15 @@ export default function Estadistica2() {
     fetchData();
   }, []);
 
-  //sirve para que solo muestre fases con por lo menos 1 convenio
-  const fasesConDatos = Object.entries(conveniosPorFase).filter(
-    ([, convenios]) => convenios.length > 0
-  );
+  const areasConDatos = Object.entries(conveniosPorFase).filter(([, convenios]) => convenios.length > 0);
 
   // Preparar datos para el PieChart
 const pieChartData = {
-  labels: fasesConDatos.map(([fase]) => fase),
+  labels: areasConDatos.map(([fase]) => fase),
   datasets: [
     {
-      data: fasesConDatos.map(([, convenios]) => convenios.length),
-      backgroundColor: fasesConDatos.map(
-        ([fase]) => fases.find(f => f.nombre === fase)?.color || "#D1D5DB"
-      ),
+      data: areasConDatos.map(([, convenios]) => convenios.length),
+      backgroundColor: generarColoresDesdeBase(areasConDatos.length),
     },
   ],
 };
@@ -110,13 +100,13 @@ const chartOptions = {
       <div className="w-1/4 pr-4 border-r border-gray-300">
         <h2 className="text-lg font-bold mb-4 text-gray-700">Fases del Convenio</h2>
         <ul className="space-y-2">
-          {fases.map((fase, index) => (
+          {Object.keys(conveniosPorFase).map((fase, index) => (
             <li key={index} className="flex items-center">
               <span
                 className="w-4 h-4 rounded-full inline-block mr-2"
-                style={{ backgroundColor: fase.color }}
+                style={{ backgroundColor: generarColoresDesdeBase(Object.keys(conveniosPorFase).length)[index] }}
               ></span>
-              <span className="text-gray-700 font-medium">{fase.nombre}</span>
+              <span className="text-gray-700 font-medium">{fase}</span>
             </li>
           ))}
         </ul>
@@ -125,22 +115,20 @@ const chartOptions = {
       {/*  Gráfico de Convenios por Fase */}
       <div className="w-3/4 pl-4 flex flex-col items-center">
         <h2 className="text-lg font-bold mb-4 text-gray-700">📊 Distribución de Convenios por Fase</h2>
-        <div className="w-[400px] h-[400px]"> {/* Reducir tamaño del gráfico */}
+        <div className="w-[400px] h-[400px]">
           <Chart type="pie" data={pieChartData} options={chartOptions} />
         </div>
 
         <div className="mt-6 w-full">
           <Accordion multiple activeIndex={[0]}>
-            {Object.entries(conveniosPorFase).map(([fase, convenios], index) => {
-              const faseColor = fases.find(f => f.nombre === fase)?.color || "#D1D5DB"; // Color por defecto
-
-              return convenios.length > 0 && (
+            {Object.entries(conveniosPorFase).map(([fase, convenios], index) => (
+              convenios.length > 0 && (
                 <AccordionTab
                   key={index}
                   header={
                     <span
                       className="text-white px-3 py-1 rounded-md font-semibold"
-                      style={{ backgroundColor: faseColor }}
+                      style={{ backgroundColor: generarColoresDesdeBase(Object.keys(conveniosPorFase).length)[index] }}
                     >
                       {fase}
                     </span>
@@ -152,8 +140,8 @@ const chartOptions = {
                     ))}
                   </ul>
                 </AccordionTab>
-              );
-            })}
+              )
+            ))}
           </Accordion>
         </div>
       </div>
