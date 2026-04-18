@@ -114,7 +114,7 @@ export default function InventarioTable() {
         </div>
         <div>
           <p className="text-xs text-gray-500 mb-1">Presupuesto</p>
-          <p className="font-medium">₡ {Number(rowData.presupuesto).toLocaleString("es-CR", { minimumFractionDigits: 2 })}</p>
+          <p className="font-medium">{rowData.presupuesto}</p>
         </div>
         <div>
           <p className="text-xs text-gray-500 mb-1">Fecha de Inicio</p>

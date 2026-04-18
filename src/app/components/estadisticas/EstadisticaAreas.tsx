@@ -1,9 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 import { Chart } from "primereact/chart";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { API_BASE, apiFetch } from "@/utils/api";
+
+ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
 const basePalette = ["#CFAC65", "#182951", "#F2DAB1", "#C1C5C8", "#0034A0"];
 

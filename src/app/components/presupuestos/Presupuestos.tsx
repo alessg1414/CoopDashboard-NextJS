@@ -107,13 +107,14 @@ export default function PresupuestosTable() {
 
       // Calcular monto consumido y saldo
       const montoConsumido = solicitudesFiltradas.reduce(
-        (sum: number, s: SolicitudPresupuesto) => sum + Number(s.total_factura || 0), 
+        (sum: number, s: SolicitudPresupuesto) => sum + parseCurrency(s.total_factura), 
         0
       );
+      const presupuesto = parseCurrency(fichaEncontrada.presupuesto_asignado);
       const fichaConCalculos = {
         ...fichaEncontrada,
         monto_consumido: montoConsumido,
-        saldo: fichaEncontrada.presupuesto_asignado - montoConsumido
+        saldo: presupuesto - montoConsumido
       };
       setFichaSeleccionada(fichaConCalculos);
       setSolicitudes(solicitudesFiltradas);
@@ -128,10 +129,16 @@ export default function PresupuestosTable() {
     }
   };
 
+  const parseCurrency = (value: number | string | null | undefined): number => {
+    if (value == null) return 0;
+    if (typeof value === 'number') return value;
+    const cleaned = value.replace(/[₡,\s]/g, '');
+    const num = parseFloat(cleaned);
+    return isNaN(num) ? 0 : num;
+  };
+
   const formatCurrency = (value: number | string | null | undefined) => {
-    if (!value) return "₡ 0.00";
-    const num = typeof value === 'string' ? parseFloat(value) : value;
-    if (isNaN(num)) return "₡ 0.00";
+    const num = parseCurrency(value);
     return `₡ ${num.toLocaleString('es-CR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 

@@ -1,6 +1,5 @@
 "use client";
 
-/*import Graficos from "@/app/components/estadisticas/graficos/GraficosProyectos";*/
 import Graficos from "@/app/components/estadisticas/graficos/GraficosProyectos";
 import { TabView, TabPanel } from "primereact/tabview";
 
