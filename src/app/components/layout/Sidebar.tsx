@@ -210,16 +210,7 @@ export default function Sidebar() {
               }}
             />
           </li>
-          <li>
-            <Button
-              label="Mapa"
-              className="w-full justify-start bg-gray-100 text-gray-700 hover:bg-[#CDA95F] hover:text-white transition-all duration-300 p-2 rounded-md"
-              onClick={() => {
-                router.push("/dashboard/acuerdosViajesMapa");
-                setSidebarVisible(false);
-              }}
-            />
-          </li>
+
         </ul>
       )}
       </li>

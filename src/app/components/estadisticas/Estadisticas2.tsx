@@ -91,30 +91,14 @@ const pieChartData = {
 const chartOptions = {
   maintainAspectRatio: false,
   responsive: true,
-  layout: {
-      padding: {
-        top: 40,
-        bottom: 30,
-        left: 40,
-        right: 50,
-      },
-    },
   plugins: {
-    legend: {
-      display: false,
-    },
+    legend: { display: false },
     datalabels: {
       color: "#333",
       formatter: (value: number, context: any) => {
         const sum = context.chart.data.datasets[0].data.reduce((a: number, b: number) => a + b, 0);
         const percentage = ((value / sum) * 100).toFixed(1);
         return `${percentage}%`;
-      },
-      anchor: "end",
-      align: "end",
-      offset: 10,
-      font: {
-        weight: "bold" as const,
       },
     },
   },
